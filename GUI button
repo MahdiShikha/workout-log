@@ -1,0 +1,18 @@
+from tkinter import *
+
+root = Tk()
+#this function outputs a text
+def myClick():
+  myLabel = Label(root, text="Button has been successfully clicked")
+  myLabel.pack()
+#creating a button
+
+myButton = Button(root, text="myButton test", command=myClick, bg="green")
+#padx increases the x value of the Button
+#pady increases the y value of the button
+#state=DISABLED disables the button
+#command gives the button a function to perform when the button has been clicked
+#fg changes foreground colour, bg changes background colour
+myButton.pack()
+
+root.mainloop()
