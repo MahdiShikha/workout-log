@@ -2,7 +2,7 @@
 # Provides simple interface to enter exercise, sets, reps and start/stop stopwatch.
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import time
 
 
@@ -61,7 +61,7 @@ class WorkoutLogApp(tk.Tk):
         # Exercise entry
         ttk.Label(self, text="Exercise").grid(row=2, column=0, pady=5)
         ttk.Label(self, text="Sets").grid(row=2, column=1)
-        ttk.Label(self, text="Reps").grid(row=2, column=2)
+        ttk.Label(self, text="Reps per set\n(comma separated)").grid(row=2, column=2)
 
         self.exercise_var = tk.StringVar()
         self.sets_var = tk.StringVar()
@@ -79,14 +79,33 @@ class WorkoutLogApp(tk.Tk):
 
     def add_entry(self):
         exercise = self.exercise_var.get().strip()
-        sets = self.sets_var.get().strip()
-        reps = self.reps_var.get().strip()
-        if exercise and sets and reps:
-            entry = f"{exercise}: {sets} sets x {reps} reps\n"
-            self.log_text.insert(tk.END, entry)
-            self.exercise_var.set("")
-            self.sets_var.set("")
-            self.reps_var.set("")
+        sets_text = self.sets_var.get().strip()
+        reps_text = self.reps_var.get().strip()
+
+        if not (exercise and sets_text and reps_text):
+            return
+
+        try:
+            sets = int(sets_text)
+        except ValueError:
+            messagebox.showerror("Invalid Sets", "Sets must be a number")
+            return
+
+        reps_list = [r.strip() for r in reps_text.split(',') if r.strip()]
+        if len(reps_list) != sets:
+            messagebox.showerror(
+                "Mismatch",
+                "Number of reps values must match number of sets",
+            )
+            return
+
+        entry = f"{exercise}: " + \
+            ", ".join(f"Set {i+1}: {rep} reps" for i, rep in enumerate(reps_list)) + "\n"
+        self.log_text.insert(tk.END, entry)
+
+        self.exercise_var.set("")
+        self.sets_var.set("")
+        self.reps_var.set("")
 
 
 if __name__ == "__main__":
